@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/gunicorn.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -810,6 +810,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/gunicornc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../uwsgi/" class="md-nav__link">
         
   
@@ -1271,6 +1299,56 @@
     <span class="md-ellipsis">
       
         wsgi_app
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#control_socket" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        control_socket
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control_socket_mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        control_socket_mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control_socket_disable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        control_socket_disable
       
     </span>
   </a>
@@ -2713,6 +2791,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#http_parser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        http_parser
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3344,6 +3433,40 @@ prefix.</p>
 <p>A WSGI application path in pattern <code>$(MODULE_NAME):$(VARIABLE_NAME)</code>.</p>
 <div class="admonition info">
 <p class="admonition-title">Added in 20.1.0</p>
+</div>
+<h2 id="control">Control<a class="headerlink" href="#control" title="Permanent link">&para;</a></h2>
+<h3 id="control_socket"><code>control_socket</code><a class="headerlink" href="#control_socket" title="Permanent link">&para;</a></h3>
+<p><strong>Command line:</strong> <code>--control-socket PATH</code></p>
+<p><strong>Default:</strong></p>
+<p>$XDG_RUNTIME_DIR/gunicorn.ctl or $HOME/.gunicorn/gunicorn.ctl</p>
+<p>Unix socket path for control interface.</p>
+<p>The control socket allows runtime management of Gunicorn via the
+<code>gunicornc</code> command-line tool. Commands include viewing worker
+status, adjusting worker count, and graceful reload/shutdown.</p>
+<p>Default: <code>$XDG_RUNTIME_DIR/gunicorn.ctl</code> if XDG_RUNTIME_DIR is set,
+otherwise <code>$HOME/.gunicorn/gunicorn.ctl</code>. The parent directory is
+created automatically if needed.</p>
+<p>Use <code>--no-control-socket</code> to disable.</p>
+<div class="admonition info">
+<p class="admonition-title">Added in 25.1.0</p>
+</div>
+<h3 id="control_socket_mode"><code>control_socket_mode</code><a class="headerlink" href="#control_socket_mode" title="Permanent link">&para;</a></h3>
+<p><strong>Command line:</strong> <code>--control-socket-mode INT</code></p>
+<p><strong>Default:</strong> <code>384</code></p>
+<p>Permission mode for control socket.</p>
+<p>Restricts who can connect to the control socket. Default <code>0600</code>
+allows only the socket owner. Set to <code>0660</code> to allow group access.</p>
+<div class="admonition info">
+<p class="admonition-title">Added in 25.1.0</p>
+</div>
+<h3 id="control_socket_disable"><code>control_socket_disable</code><a class="headerlink" href="#control_socket_disable" title="Permanent link">&para;</a></h3>
+<p><strong>Command line:</strong> <code>--no-control-socket</code></p>
+<p><strong>Default:</strong> <code>False</code></p>
+<p>Disable control socket.</p>
+<p>When set, no control socket is created and <code>gunicornc</code> cannot
+connect to this Gunicorn instance.</p>
+<div class="admonition info">
+<p class="admonition-title">Added in 25.1.0</p>
 </div>
 <h2 id="debugging">Debugging<a class="headerlink" href="#debugging" title="Permanent link">&para;</a></h2>
 <h3 id="reload"><code>reload</code><a class="headerlink" href="#reload" title="Permanent link">&para;</a></h3>
@@ -4235,59 +4358,110 @@ an IP address are treated as allowed, unconditionally.</p>
 <code>secure_scheme_headers</code> is complex. Various scenarios are documented below to further elaborate.
 In each case, we have a request from the remote address 134.213.44.18, and the default value of
 <code>secure_scheme_headers</code>:</p>
-<p>.. code::</p>
-<div class="highlight"><pre><span></span><code>secure_scheme_headers = {
-    &#39;X-FORWARDED-PROTOCOL&#39;: &#39;ssl&#39;,
-    &#39;X-FORWARDED-PROTO&#39;: &#39;https&#39;,
-    &#39;X-FORWARDED-SSL&#39;: &#39;on&#39;
-}
+<div class="highlight"><pre><span></span><code><span class="n">secure_scheme_headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;X-FORWARDED-PROTOCOL&#39;</span><span class="p">:</span> <span class="s1">&#39;ssl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;X-FORWARDED-PROTO&#39;</span><span class="p">:</span> <span class="s1">&#39;https&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;X-FORWARDED-SSL&#39;</span><span class="p">:</span> <span class="s1">&#39;on&#39;</span>
+<span class="p">}</span>
 </code></pre></div>
-<p>.. list-table::
-    :header-rows: 1
-    :align: center
-    :widths: auto</p>
-<div class="highlight"><pre><span></span><code>* - ``forwarded-allow-ips``
-  - Secure Request Headers
-  - Result
-  - Explanation
-* - .. code::
-
-        [&quot;127.0.0.1&quot;]
-  - .. code::
-
-        X-Forwarded-Proto: https
-  - .. code::
-
-        wsgi.url_scheme = &quot;http&quot;
-  - IP address was not allowed
-* - .. code::
-
-        &quot;*&quot;
-  - &lt;none&gt;
-  - .. code::
-
-        wsgi.url_scheme = &quot;http&quot;
-  - IP address allowed, but no secure headers provided
-* - .. code::
-
-        &quot;*&quot;
-  - .. code::
-
-        X-Forwarded-Proto: https
-  - .. code::
-
-        wsgi.url_scheme = &quot;https&quot;
-  - IP address allowed, one request header matched
-* - .. code::
-
-        [&quot;134.213.44.18&quot;]
-  - .. code::
-
-        X-Forwarded-Ssl: on
-        X-Forwarded-Proto: http
-  - ``InvalidSchemeHeaders()`` raised
-  - IP address allowed, but the two secure headers disagreed on if HTTPS was used
-</code></pre></div>
+<table>
+<thead>
+<tr>
+<th colspan="1" rowspan="1">
+<p>forwarded-allow-ips</p>
+</th>
+<th colspan="1" rowspan="1">
+<p>Secure Request Headers</p>
+</th>
+<th colspan="1" rowspan="1">
+<p>Result</p>
+</th>
+<th colspan="1" rowspan="1">
+<p>Explanation</p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="1" rowspan="1">
+<p><code>"127.0.0.1"</code><br />
+</p>
+</td>
+<td colspan="1" rowspan="1">
+<p><code>X-Forwarded-Proto: https</code><br />
+</p>
+</td>
+<td colspan="1" rowspan="1">
+<p><code>wsgi.url_scheme = "http"</code><br />
+</p>
+</td>
+<td colspan="1" rowspan="1">
+<p>IP address was not<br />
+allowed</p>
+</td>
+</tr>
+<tr>
+<td colspan="1" rowspan="1">
+<p><code>"*"</code><br />
+</p>
+</td>
+<td colspan="1" rowspan="1">
+<p><code>&lt;none&gt;</code><br />
+</p>
+</td>
+<td colspan="1" rowspan="1">
+<p><code>wsgi.url_scheme = "http"</code><br />
+</p>
+</td>
+<td colspan="1" rowspan="1">
+<p>IP address allowed, but<br />
+no secure headers<br />
+provided</p>
+</td>
+</tr>
+<tr>
+<td colspan="1" rowspan="1">
+<p><code>"*"</code><br />
+</p>
+</td>
+<td colspan="1" rowspan="1">
+<p><code>X-Forwarded-Proto: https</code><br />
+</p>
+</td>
+<td colspan="1" rowspan="1">
+<p><code>wsgi.url_scheme = "https"</code><br />
+</p>
+</td>
+<td colspan="1" rowspan="1">
+<p>IP address allowed, one<br />
+request header matched</p>
+</td>
+</tr>
+<tr>
+<td colspan="1" rowspan="1">
+<p><code>"134.213.44.18"</code><br />
+<br />
+</p>
+</td>
+<td colspan="1" rowspan="1">
+<p><code>X-Forwarded-Ssl: on</code><br />
+<code>X-Forwarded-Proto: http</code><br />
+</p>
+</td>
+<td colspan="1" rowspan="1">
+<p><code>InvalidSchemeHeaders()</code><br />
+raised<br />
+</p>
+</td>
+<td colspan="1" rowspan="1">
+<p>IP address allowed, but<br />
+the two secure headers<br />
+disagreed on if HTTPS<br />
+was used</p>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <h3 id="pythonpath"><code>pythonpath</code><a class="headerlink" href="#pythonpath" title="Permanent link">&para;</a></h3>
 <p><strong>Command line:</strong> <code>--pythonpath STRING</code></p>
@@ -4542,7 +4716,6 @@ libraries may be installed using setuptools' <code>extras_require</code> feature
 <p>A string referring to one of the following bundled classes:</p>
 <ul>
 <li><code>sync</code></li>
-<li><code>eventlet</code> - <strong>DEPRECATED: will be removed in 26.0</strong>. Requires eventlet &gt;= 0.40.3</li>
 <li><code>gevent</code>   - Requires gevent &gt;= 24.10.1 (or install it via
   <code>pip install gunicorn[gevent]</code>)</li>
 <li><code>tornado</code>  - Requires tornado &gt;= 6.5.0 (or install it via
@@ -4574,7 +4747,7 @@ instead.</p>
 <p><strong>Command line:</strong> <code>--worker-connections INT</code></p>
 <p><strong>Default:</strong> <code>1000</code></p>
 <p>The maximum number of simultaneous clients.</p>
-<p>This setting only affects the <code>gthread</code>, <code>eventlet</code> and <code>gevent</code> worker types.</p>
+<p>This setting only affects the <code>gthread</code> and <code>gevent</code> worker types.</p>
 <h3 id="max_requests"><code>max_requests</code><a class="headerlink" href="#max_requests" title="Permanent link">&para;</a></h3>
 <p><strong>Command line:</strong> <code>--max-requests INT</code></p>
 <p><strong>Default:</strong> <code>0</code></p>
@@ -4668,6 +4841,22 @@ connections) before the request task is cancelled.</p>
 database connections). Apps with long-running database operations may
 need to increase this value.</p>
 <p>This setting only affects the <code>asgi</code> worker type.</p>
+<div class="admonition info">
+<p class="admonition-title">Added in 25.0.0</p>
+</div>
+<h3 id="http_parser"><code>http_parser</code><a class="headerlink" href="#http_parser" title="Permanent link">&para;</a></h3>
+<p><strong>Command line:</strong> <code>--http-parser STRING</code></p>
+<p><strong>Default:</strong> <code>'auto'</code></p>
+<p>HTTP parser implementation for ASGI workers.</p>
+<ul>
+<li>auto: Use H1CProtocol if gunicorn_h1c is available, else PythonProtocol (default)</li>
+<li>fast: Require H1CProtocol from gunicorn_h1c (fail if unavailable)</li>
+<li>python: Force pure Python PythonProtocol parser</li>
+</ul>
+<p>ASGI workers use callback-based parsing in data_received() for efficient
+incremental parsing. The gunicorn_h1c C extension provides significantly
+faster HTTP parsing using picohttpparser with SIMD optimizations.</p>
+<p>Install it with: pip install gunicorn[fast]</p>
 <div class="admonition info">
 <p class="admonition-title">Added in 25.0.0</p>
 </div>
